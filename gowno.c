@@ -1,44 +1,20 @@
-// #include "string.h"
-// #include <stdio.h>
+#include "string.h"
+#include <stdio.h>
 
-// int main(void)
-// {
-//     char *txt = "12345";
-//     char substr[5] = "alad";
-//     char spaces[4] = "   ";
-//     int EMPTY = 3;
-//     int nchars = 1;
-//     int go = 1;
-//     while (go)
-//     {
-//         if (EMPTY >= 0)
-//         {
-//             strncpy(substr, spaces, EMPTY);
-//             strncpy(substr + EMPTY--, txt, nchars++);
-//             printf("|%c|%c|%c|%c|\n", substr[0],substr[1],substr[2],substr[3]);
-//             // EMPTY--;
-//             go = 1;
-//         } else {
-//             go = 0;
-//         }
-//     }
 
-//     // printf("%s\n", substr);
-//     // strncpy(substr, spaces, 3);
-//     // printf("%s\n", substr);
-//     // strncpy(substr+3, txt, 1);
-//     // printf("%s\n", substr);
-//     // strncpy(substr, spaces, 2);
-//     // printf("%s\n", substr);
-//     // strncpy(substr+2, txt, 2);
-//     // printf("%s\n", substr);
-    
-//     // strncpy(substr, spaces, 4);
-//     // printf("%s\n", substr);
-//     // strncpy(substr, spaces, 4);
-//     // printf("%s\n", substr);
-//     // strncpy(substr, spaces, 4);
-//     // printf("%s\n", substr);
+#define V_BRIGHT 2000
+#define BRIGHT 1000
+#define DIM 500
+#define V_DIM 200
 
-//     return 0;
-// }
+
+typedef enum {V_DIM, DIM, V_BRIGHT, BRIGHT} brightness_t;
+int main(void)
+{
+
+    int d = brightness_t[1];
+
+    printf("%d", d);
+
+    return 0;
+}

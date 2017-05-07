@@ -1,32 +1,26 @@
 /*This code is public domain but you buy me a beer if you use this and we meet
   someday (Beerware license).
-
   4 digit 7 segment display:
   http://www.sparkfun.com/products/9483
   Datasheet:
   http://www.sparkfun.com/datasheets/Components/LED/7-Segment/YSD-439AR6B-35.pdf
-
   This is an example of how to drive a 7 segment LED display from an ATmega
   without the use of current limiting resistors. This technique is very common
   but requires some knowledge of electronics - you do run the risk of dumping
   too much current through the segments and burning out parts of the display.
   If you use the stock code you should be ok, but be careful editing the
   brightness values.
-
   This code should work with all colors (red, blue, yellow, green) but the
   brightness will vary from one color to the next because the forward voltage
   drop of each color is different. This code was written and calibrated for the
   red color.
-
   This code will work with most Arduinos but you may want to re-route some of
   the pins.
-
   7 segments
   4 digits
   1 colon
   =
   12 pins required for full control
-
 */
 
 int digit1 = 11; //PWM Display pin 1
@@ -73,7 +67,13 @@ int buffer[4];
 void loop()
 {
 
-  //long startTime = millis();
+  doTheReading();
+
+  myDisplay(BRIGHT, &DISP, TEXT);
+}
+
+void doTheReading()
+{
   if (Serial.available() > 0)
   {
     // read the incoming byte:
@@ -92,24 +92,35 @@ void loop()
       if (Serial.available() == 4)
         readBytes();
       changeSpeed();
+      break;
     //T
     case 84:
+      if (Serial.available() == 6)
+      {
+        readAndChangeText();
+      }
       break;
     }
-
-    // say what you got:
-    Serial.print("I received: ");
-    Serial.println(incomingByte);
   }
-  myDisplay(BRIGHT, DISP, TEXT);
-  // displayNumber(millis()/1000);
-
-  //while( (millis() - startTime) < 2000) {
-  //displayNumber(1217);
-  //}
-  //delay(1000);
 }
 
+void readAndChangeText()
+{
+  char buff[7];
+  char c;
+  for (int i = 0; i < 6; i++)
+  {
+    c = Serial.read();
+    if ((c >= '0'  && c <= '9') || c == 'A' || c == 'b' || c == 'C' || c == 'd' || c == 'E' || c == 'F')
+    {
+      buff[i] = c;
+    }
+  }
+  buff[6] = '\0';
+  Serial.println("Data in text buffer:");
+  Serial.println(buff);
+  strcpy(TEXT, buff);
+}
 void changeSpeed()
 {
   int newSpeed = 0;
@@ -163,7 +174,7 @@ void changeBrightness()
   Serial.println("");
 }
 
-void myDisplay(int *brightness, int display_time, char *text)
+void myDisplay(int *brightness, int *display_time, char *text)
 {
   long startTime;
   char *txt = text;
@@ -188,8 +199,9 @@ void myDisplay(int *brightness, int display_time, char *text)
     }
 
     startTime = millis();
-    while ((millis() - startTime) / 1 <= display_time)
+    while ((millis() - startTime) / 1 <= *display_time)
     {
+      doTheReading();
       displayCharOnDigit(substr, brightness);
     }
   }

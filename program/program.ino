@@ -10,10 +10,6 @@
 // 9. Wisła Płock
 //10. nie ma punktu 5.
 
-
-
-
-
 // PINS CONNECTION
 int digit1 = 11; //PWM Display pin 1
 int digit2 = 10; //PWM Display pin 2
@@ -55,7 +51,7 @@ void setup()
   pinMode(digit4, OUTPUT);
   pinMode(13, OUTPUT);
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 //----------------------------------------------------------------
 
@@ -113,7 +109,8 @@ void readAndChangeText()
   for (int i = 0; i < 6; i++)
   {
     c = buff[i];
-    if (!((c >= '0' && c <= '9') || c == 'A' || c == 'b' || c == 'C' || c == 'd' || c == 'E' || c == 'F')) {
+    if (!((c >= '0' && c <= '9') || c == 'A' || c == 'b' || c == 'C' || c == 'd' || c == 'E' || c == 'F'))
+    {
       return;
     }
   }
@@ -245,7 +242,7 @@ void displayCharOnDigit(char *toDisplay, int *bright)
 
     //Turn on the right segments for this digit
     // if (digit == onDigit)
-    lightNumber(toDisplay[i] - '0');
+    lightNumber(toDisplay[i]);
     // toDisplay /= 10;
 
     // delayMicroseconds(DISPLAY_BRIGHTNESS);
@@ -255,7 +252,7 @@ void displayCharOnDigit(char *toDisplay, int *bright)
     //Display digit for fraction of a second (1us to 5000us, 500 is pretty good)
 
     //Turn off all segments
-    lightNumber(10);
+    lightNumber('x');
 
     //Turn off all digits
     digitalWrite(digit1, DIGIT_OFF);
@@ -325,7 +322,7 @@ void displayNumber(int toDisplay)
 //Given a number, turns on those segments
 //If number == 10, then turn off number
 
-void lightNumber(int numberToDisplay)
+void lightNumber(char numberToDisplay)
 {
 
 #define SEGMENT_ON LOW
@@ -334,7 +331,7 @@ void lightNumber(int numberToDisplay)
   switch (numberToDisplay)
   {
 
-  case 0:
+  case '0':
     digitalWrite(segA, SEGMENT_ON);
     digitalWrite(segB, SEGMENT_ON);
     digitalWrite(segC, SEGMENT_ON);
@@ -344,7 +341,7 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segG, SEGMENT_OFF);
     break;
 
-  case 1:
+  case '1':
     digitalWrite(segA, SEGMENT_OFF);
     digitalWrite(segB, SEGMENT_ON);
     digitalWrite(segC, SEGMENT_ON);
@@ -354,7 +351,7 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segG, SEGMENT_OFF);
     break;
 
-  case 2:
+  case '2':
     digitalWrite(segA, SEGMENT_ON);
     digitalWrite(segB, SEGMENT_ON);
     digitalWrite(segC, SEGMENT_OFF);
@@ -364,7 +361,7 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segG, SEGMENT_ON);
     break;
 
-  case 3:
+  case '3':
     digitalWrite(segA, SEGMENT_ON);
     digitalWrite(segB, SEGMENT_ON);
     digitalWrite(segC, SEGMENT_ON);
@@ -374,7 +371,7 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segG, SEGMENT_ON);
     break;
 
-  case 4:
+  case '4':
     digitalWrite(segA, SEGMENT_OFF);
     digitalWrite(segB, SEGMENT_ON);
     digitalWrite(segC, SEGMENT_ON);
@@ -384,7 +381,7 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segG, SEGMENT_ON);
     break;
 
-  case 5:
+  case '5':
     digitalWrite(segA, SEGMENT_ON);
     digitalWrite(segB, SEGMENT_OFF);
     digitalWrite(segC, SEGMENT_ON);
@@ -394,7 +391,7 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segG, SEGMENT_ON);
     break;
 
-  case 6:
+  case '6':
     digitalWrite(segA, SEGMENT_ON);
     digitalWrite(segB, SEGMENT_OFF);
     digitalWrite(segC, SEGMENT_ON);
@@ -404,7 +401,7 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segG, SEGMENT_ON);
     break;
 
-  case 7:
+  case '7':
     digitalWrite(segA, SEGMENT_ON);
     digitalWrite(segB, SEGMENT_ON);
     digitalWrite(segC, SEGMENT_ON);
@@ -414,7 +411,7 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segG, SEGMENT_OFF);
     break;
 
-  case 8:
+  case '8':
     digitalWrite(segA, SEGMENT_ON);
     digitalWrite(segB, SEGMENT_ON);
     digitalWrite(segC, SEGMENT_ON);
@@ -424,7 +421,7 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segG, SEGMENT_ON);
     break;
 
-  case 9:
+  case '9':
     digitalWrite(segA, SEGMENT_ON);
     digitalWrite(segB, SEGMENT_ON);
     digitalWrite(segC, SEGMENT_ON);
@@ -433,8 +430,63 @@ void lightNumber(int numberToDisplay)
     digitalWrite(segF, SEGMENT_ON);
     digitalWrite(segG, SEGMENT_ON);
     break;
+//TODO Ustawic odpowiednio
+  case 'A':
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_OFF);
+    digitalWrite(segE, SEGMENT_ON);
+    digitalWrite(segF, SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
+  case 'b':
+    digitalWrite(segA, SEGMENT_OFF);
+    digitalWrite(segB, SEGMENT_OFF);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE, SEGMENT_ON);
+    digitalWrite(segF, SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
+  case 'C':
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_OFF);
+    digitalWrite(segC, SEGMENT_OFF);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE, SEGMENT_ON);
+    digitalWrite(segF, SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_OFF);
+    break;
+  case 'd':
+    digitalWrite(segA, SEGMENT_OFF);
+    digitalWrite(segB, SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE, SEGMENT_ON);
+    digitalWrite(segF, SEGMENT_OFF);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
+  case 'E':
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_OFF);
+    digitalWrite(segC, SEGMENT_OFF);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE, SEGMENT_ON);
+    digitalWrite(segF, SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
+  case 'F':
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_OFF);
+    digitalWrite(segC, SEGMENT_OFF);
+    digitalWrite(segD, SEGMENT_OFF);
+    digitalWrite(segE, SEGMENT_ON);
+    digitalWrite(segF, SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
 
-  case 10:
+  case 'x':
     digitalWrite(segA, SEGMENT_OFF);
     digitalWrite(segB, SEGMENT_OFF);
     digitalWrite(segC, SEGMENT_OFF);

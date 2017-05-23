@@ -1,14 +1,7 @@
 //TODO:
-// 1. segmenty do literek
 // 2. moze jakies posprzatanie kodu, nie wiem czy to bedzie czytelne dla Was :D
-// 3. zmiana jasnosci i predkosci dziala spoczko, ale zmiana tekstu dopiero za drugim razem,
-//    chyba ta funkcja czytaja jest odpalana ze zlego miejsca ale juz nie chce mi sie nad tym kminic dzisiaj
-// 4. have fun
-// 6. obsluga bledow, moze jakies wyswietlanie ERROR wtedy?
+// 6. obsluga bledow, moze jakies wyswietlanie ERROR wtedy? Obcinanie przy za duzej liczbe znakow? Dunno
 // 7. optymalizacja :3 OSZCZEDZAJ RAM GDZIEKOLWIEK JESTES
-// 8. nie no zart na razie
-// 9. Wisła Płock
-//10. nie ma punktu 5.
 
 // PINS CONNECTION
 int digit1 = 11; //PWM Display pin 1
@@ -57,40 +50,49 @@ void setup()
 
 void loop()
 {
-  doTheReading();
-  myDisplay(BRIGHT, &DISP, TEXT);
+  checkSerialInput();
+  runDisplay(BRIGHT, &DISP, TEXT);
 }
 
-void doTheReading()
+void checkSerialInput()
 {
+
   int incomingByte = 0;
   if (Serial.available() > 0)
   {
     incomingByte = Serial.read();
-    Serial.print("available chars left: ");
-    Serial.println(Serial.available());
-
     switch (incomingByte)
     {
     //B
     case 66:
       if (Serial.available() == 4)
+      {
         readBytes();
-      changeBrightness();
+        changeBrightness();
+      }
+      else
+      {
+        Serial.println("ERROR: Pass exactly 4 digits in range 0-3");
+      }
       break;
     //D
     case 68:
       if (Serial.available() == 4)
+      {
         readBytes();
-      changeSpeed();
+        changeSpeed();
+      }
+      else
+      {
+        Serial.println("ERROR: Pass exactly 4 digits in range 0-9");
+      }
       break;
     //T
     case 84:
-      // if (Serial.available() == 6)
-      {
-        readAndChangeText();
-      }
-      break;
+    {
+      readAndChangeText();
+    }
+    break;
     }
   }
 }
@@ -100,30 +102,25 @@ void readAndChangeText()
 {
   Serial.println("reading new text...");
   char buff[7];
-  char c;
   for (int i = 0; i < 6; i++)
   {
     buff[i] = Serial.read();
-  }
-
-  for (int i = 0; i < 6; i++)
-  {
-    c = buff[i];
-    if (!((c >= '0' && c <= '9') || c == 'A' || c == 'b' || c == 'C' || c == 'd' || c == 'E' || c == 'F'))
+    if (!((buff[i] >= '0' && buff[i] <= '9') || buff[i] == 'A' || buff[i] == 'b' || buff[i] == 'C' || buff[i] == 'd' || buff[i] == 'E' || buff[i] == 'F'))
     {
+      Serial.print("Incorrect char: ");
+      Serial.println(buff[i]);
       return;
     }
   }
+
   buff[6] = '\0';
-  Serial.println("Data in text buffer:");
-  Serial.println(buff);
   strcpy(TEXT, buff);
 }
+
 void changeSpeed()
 {
   int newSpeed = 0;
   int divider = 1000;
-  Serial.print("Speed changed to: ");
 
   for (int i = 0; i < 4; i++)
   {
@@ -135,12 +132,12 @@ void changeSpeed()
     else
     {
       //...error, zle parametry, zrob cos, achtuuung!
+      Serial.println("ERROR: podaj tylko cyfry!");
       DISP = 500;
-      break;
+      return;
     }
   }
   DISP = newSpeed;
-  Serial.println(DISP);
 }
 //----------------------------------------------------------------
 
@@ -176,7 +173,7 @@ void changeBrightness()
 }
 //----------------------------------------------------------------
 
-void myDisplay(int *brightness, int *display_time, char *text)
+void runDisplay(int *brightness, int *display_time, char *text)
 {
   long startTime;
   char *txt = text;
@@ -189,7 +186,7 @@ void myDisplay(int *brightness, int *display_time, char *text)
   int nchars = 1;
   for (int i = length + 3; i >= 0; i--)
   {
-    doTheReading();
+    checkSerialInput();
     if (EMPTY > 0)
     {
       strncpy(substr, spaces, EMPTY);
@@ -204,7 +201,7 @@ void myDisplay(int *brightness, int *display_time, char *text)
     startTime = millis();
     while ((millis() - startTime) / 1 <= *display_time)
     {
-      doTheReading();
+      checkSerialInput();
       displayCharOnDigit(substr, brightness);
     }
   }
@@ -241,70 +238,15 @@ void displayCharOnDigit(char *toDisplay, int *bright)
     }
 
     //Turn on the right segments for this digit
-    // if (digit == onDigit)
-    lightNumber(toDisplay[i]);
-    // toDisplay /= 10;
+    lightSegment(toDisplay[i]);
 
-    // delayMicroseconds(DISPLAY_BRIGHTNESS);
     delayMicroseconds(BRIGHTNESS[(bright[i])]);
     i++;
 
     //Display digit for fraction of a second (1us to 5000us, 500 is pretty good)
 
     //Turn off all segments
-    lightNumber('x');
-
-    //Turn off all digits
-    digitalWrite(digit1, DIGIT_OFF);
-    digitalWrite(digit2, DIGIT_OFF);
-    digitalWrite(digit3, DIGIT_OFF);
-    digitalWrite(digit4, DIGIT_OFF);
-  }
-
-  while ((millis() - beginTime) < 10)
-    ;
-  //Wait for 20ms to pass before we paint the display again
-}
-//----------------------------------------------------------------
-
-void displayNumber(int toDisplay)
-{
-#define DISPLAY_BRIGHTNESS 1000
-
-#define DIGIT_ON LOW
-#define DIGIT_OFF HIGH
-
-  long beginTime = millis();
-
-  for (int digit = 4; digit > 0; digit--)
-  {
-
-    //Turn on a digit for a short amount of time
-    switch (digit)
-    {
-    case 1:
-      digitalWrite(digit1, DIGIT_ON);
-      break;
-    case 2:
-      digitalWrite(digit2, DIGIT_ON);
-      break;
-    case 3:
-      digitalWrite(digit3, DIGIT_ON);
-      break;
-    case 4:
-      digitalWrite(digit4, DIGIT_ON);
-      break;
-    }
-
-    //Turn on the right segments for this digit
-    lightNumber(toDisplay % 10);
-    toDisplay /= 10;
-
-    delayMicroseconds(DISPLAY_BRIGHTNESS);
-    //Display digit for fraction of a second (1us to 5000us, 500 is pretty good)
-
-    //Turn off all segments
-    lightNumber(10);
+    lightSegment('x');
 
     //Turn off all digits
     digitalWrite(digit1, DIGIT_OFF);
@@ -320,15 +262,15 @@ void displayNumber(int toDisplay)
 //----------------------------------------------------------------
 
 //Given a number, turns on those segments
-//If number == 10, then turn off number
+//If number == x, then turn off number
 
-void lightNumber(char numberToDisplay)
+void lightSegment(char characterToDisplay)
 {
 
 #define SEGMENT_ON LOW
 #define SEGMENT_OFF HIGH
 
-  switch (numberToDisplay)
+  switch (characterToDisplay)
   {
 
   case '0':
@@ -430,7 +372,7 @@ void lightNumber(char numberToDisplay)
     digitalWrite(segF, SEGMENT_ON);
     digitalWrite(segG, SEGMENT_ON);
     break;
-//TODO Ustawic odpowiednio
+
   case 'A':
     digitalWrite(segA, SEGMENT_ON);
     digitalWrite(segB, SEGMENT_ON);

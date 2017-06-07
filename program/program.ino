@@ -1,31 +1,26 @@
-//TODO:
-// 2. moze jakies posprzatanie kodu, nie wiem czy to bedzie czytelne dla Was :D
-// 6. obsluga bledow, moze jakies wyswietlanie ERROR wtedy? Obcinanie przy za duzej liczbe znakow? Dunno
-// 7. optymalizacja :3 OSZCZEDZAJ RAM GDZIEKOLWIEK JESTES
-
 // PINS CONNECTION
-int digit1 = 11; //PWM Display pin 1
-int digit2 = 10; //PWM Display pin 2
-int digit3 = 9;  //PWM Display pin 6
-int digit4 = 6;  //PWM Display pin 8
+#define digit1  11 //PWM Display pin 1
+#define digit2  10 //PWM Display pin 2
+#define digit3  9  //PWM Display pin 6
+#define digit4  6  //PWM Display pin 8
 
-int segA = 2;
-int segB = 3;
-int segC = 4;
-int segD = 5;
-int segE = A0; //pin 6 is used bij display 1 for its pwm function
-int segF = 7;
-int segG = 8;
+#define segA  2
+#define segB  3
+#define segC  4
+#define segD  5
+#define segE  12 //pin 6 is used bij display 1 for its pwm function
+#define segF  7
+#define segG  8
 //----------------------------------------------------------------
 
 //CROSS-FUNCTION VARIABLES
-int BRIGHTNESS[] = {200, 500, 1000, 2000};
+word BRIGHTNESS[] = {200, 500, 1000, 2000};
 
 char TEXT[7] = "123456";
-int BRIGHT[4] = {0, 1, 2, 3};
-int DISP = 500;
+byte BRIGHT[4] = {0, 1, 2, 3};
+word DISP = 500;
 
-int buffer[4];
+byte buffer[4];
 //----------------------------------------------------------------
 
 void setup()
@@ -105,7 +100,10 @@ void readAndChangeText()
   for (int i = 0; i < 6; i++)
   {
     buff[i] = Serial.read();
-    if (!((buff[i] >= '0' && buff[i] <= '9') || buff[i] == 'A' || buff[i] == 'b' || buff[i] == 'C' || buff[i] == 'd' || buff[i] == 'E' || buff[i] == 'F'))
+    if (buff[i] == 'D' || buff[i] == 'B') {
+      buff[i] += 32;
+    }
+    if (!((buff[i] >= '0' && buff[i] <= '9') || buff[i] == 'A' || buff[i] == 'b' || buff[i] == 'C' || buff[i] == 'd' || buff[i] == 'E' || buff[i] == 'F' || buff[i] ==' '))
     {
       Serial.print("Incorrect char: ");
       Serial.println(buff[i]);
@@ -173,7 +171,7 @@ void changeBrightness()
 }
 //----------------------------------------------------------------
 
-void runDisplay(int *brightness, int *display_time, char *text)
+void runDisplay(byte *brightness, word *display_time, char *text)
 {
   long startTime;
   char *txt = text;
@@ -208,7 +206,7 @@ void runDisplay(int *brightness, int *display_time, char *text)
 }
 //----------------------------------------------------------------
 
-void displayCharOnDigit(char *toDisplay, int *bright)
+void displayCharOnDigit(char *toDisplay, byte *bright)
 {
 #define DISPLAY_BRIGHTNESS 1000
 
@@ -427,7 +425,7 @@ void lightSegment(char characterToDisplay)
     digitalWrite(segF, SEGMENT_ON);
     digitalWrite(segG, SEGMENT_ON);
     break;
-
+  case ' ':
   case 'x':
     digitalWrite(segA, SEGMENT_OFF);
     digitalWrite(segB, SEGMENT_OFF);
@@ -439,3 +437,4 @@ void lightSegment(char characterToDisplay)
     break;
   }
 }
+

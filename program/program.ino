@@ -1,16 +1,19 @@
 // PINS CONNECTION
-#define digit1  11 //PWM Display pin 1
+#define digit1  9 //PWM Display pin 1
 #define digit2  10 //PWM Display pin 2
-#define digit3  9  //PWM Display pin 6
-#define digit4  6  //PWM Display pin 8
+#define digit3  11  //PWM Display pin 6
+#define digit4  12  //PWM Display pin 8
 
 #define segA  2
 #define segB  3
 #define segC  4
 #define segD  5
-#define segE  12 //pin 6 is used bij display 1 for its pwm function
+#define segE  6 //pin 6 is used bij display 1 for its pwm function
 #define segF  7
 #define segG  8
+
+//6--12
+//11--9
 //----------------------------------------------------------------
 
 //CROSS-FUNCTION VARIABLES
